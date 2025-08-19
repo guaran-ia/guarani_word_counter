@@ -6,7 +6,7 @@ Este repositorio contiene scripts para calcular el número de palabras en divers
 
 Cada script está adaptado al formato particular de cada dataset y puede ser ejecutado de manera independiente.
 
-## 📁 Estructura del repositorio
+##  Estructura del repositorio
 
 ```
 guarani_word_counter/
