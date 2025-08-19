@@ -1,6 +1,9 @@
-sum_grammar_counts_dedup.py << 'PY'
-import pandas as pd, glob, re
+import pandas as pd
+import glob
+import re
+import os
 
+# Patrones de archivos CSV que deben ser considerados
 patterns = [
     "grammar/guarani/translations-62k-*.csv",
     "grammar/guarani/translations/*/total.csv",
@@ -28,5 +31,31 @@ def count_words(text: str) -> int:
     text = text.strip()
     return 0 if not text else len(text.split())
 
-PYint(f"  Pares únicos (es,gn): {len(seen):,}"))) ================")
-python sum_grammar_counts_dedup.py
+# Procesar archivos
+for path in files:
+    try:
+        df = pd.read_csv(path, header=None)
+    except Exception as e:
+        print(f"Error leyendo {path}: {e}")
+        continue
+
+    if df.shape[1] < 2:
+        print(f"Archivo con menos de 2 columnas: {path}")
+        continue
+
+    for _, row in df.iterrows():
+        es, gn = norm(row[0]), norm(row[1])
+        pair = (es, gn)
+        if pair in seen:
+            continue
+        seen.add(pair)
+        tot_es += count_words(es)
+        tot_gn += count_words(gn)
+
+print("===========================================")
+print(f"Pares únicos (es, gn): {len(seen):,}")
+print(f"Total palabras español: {tot_es:,}")
+print(f"Total palabras guaraní: {tot_gn:,}")
+print("===========================================")
+
+

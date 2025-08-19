@@ -6,31 +6,30 @@ Este repositorio contiene scripts para calcular el número de palabras en divers
 
 Cada script está adaptado al formato particular de cada dataset y puede ser ejecutado de manera independiente.
 
----
+## 📁 Estructura del repositorio
 
-##  Estructura del repositorio
-
+```
 guarani_word_counter/
 ├── coreguapa/
-│ └── count_coreguapa.py
+│   └── count_coreguapa.py
 ├── jajovai/
-│ └── count_jajovai.py
+│   └── count_jajovai.py
 ├── grammar/
-│ └── sum_grammar_counts_dedup.py
+│   └── sum_grammar_counts_dedup.py
 ├── josa_joffun_joemo/
-│ └── hf_guarani_counts_inclusive.py
+│   └── hf_guarani_counts_inclusive.py
 ├── belebele/
-│ └── belebele.py
+│   └── belebele.py
 ├── tatoeba/
-│ └── count_tatoeba.py
+│   └── count_tatoeba.py
 ├── ner_gua_spa/
-│ └── count_gua_spa_tags.py
+│   └── count_gua_spa_tags.py
 ├── data/
-│ └── (archivos de entrada opcionales)
+│   └── (archivos de entrada opcionales)
 ├── requirements.txt
 └── README.md
+```
 
----
 
 ## Instalación
 

@@ -1,31 +1,59 @@
-import re, argparse, csv, os, unicodedata
-from datasets import load_dataset
-import fasttext
+import pandas as pd
+import glob
+import re
+import os
 
-PRESETS = {
-    "joemo":  ("mmaguero/gn-emotion-recognition",         "texto"),
-    "joff":   ("mmaguero/gn-offensive-language-identification", "text"),
-    "joffun": ("mmaguero/gn-humor-detection",             "text"),
-}
+# Patrones de archivos CSV que deben ser considerados
+patterns = [
+    "grammar/guarani/translations-62k-*.csv",
+    "grammar/guarani/translations/*/total.csv",
+]
 
-URL_RE     = re.compile(r'https?://\S+|www\.\S+', re.I)
-MENTION_RE = re.compile(r'@\w+')
-HASHTAG_RE = re.compile(r'#(\w+)')  # "#palabra" -> "palabra"
-WORD_RE    = re.compile(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñÃÕãẽĩõũỹẼĨÕŨỸ]+")
+files = []
+for p in patterns:
+    files.extend(glob.glob(p))
 
-def keep_letters_only(s: str) -> str:
-    out=[]
-    for ch in s:
-        cat=unicodedata.category(ch)
-        if cat.startswith("L") or cat.startswith("M") or ch in " '’–-":
-            out.append(ch)
-        else:
-            out.append(" ")
-    return "".join(out)
+if not files:
+    print("No encontré archivos para sumar. ¿Estás en la carpeta del repo?")
+    raise SystemExit(1)
 
-def clean_text(raw: str) -> str:
-    if not raw: return ""
-    if "|||" in raw: raw = raw.split("|||", 1)[0]        # corta etiqueta final
-    raw = URL_RE.sub(" ", raw)
-    raw = MENTION_RE.sub(" ", raw)
-    main()_ == "__main__":rdado: {args.save}")ows)ewline="") as f:os.path.dirname(args.save) else None"]]guardar)")
+tot_es = 0
+tot_gn = 0
+seen = set()
+SPACE_RE = re.compile(r"\s+")
+
+def norm(s: str) -> str:
+    s = str(s).strip()
+    s = SPACE_RE.sub(" ", s)
+    return s
+
+def count_words(text: str) -> int:
+    text = text.strip()
+    return 0 if not text else len(text.split())
+
+# Procesar archivos
+for path in files:
+    try:
+        df = pd.read_csv(path, header=None)
+    except Exception as e:
+        print(f"Error leyendo {path}: {e}")
+        continue
+
+    if df.shape[1] < 2:
+        print(f"Archivo con menos de 2 columnas: {path}")
+        continue
+
+    for _, row in df.iterrows():
+        es, gn = norm(row[0]), norm(row[1])
+        pair = (es, gn)
+        if pair in seen:
+            continue
+        seen.add(pair)
+        tot_es += count_words(es)
+        tot_gn += count_words(gn)
+
+print("===========================================")
+print(f"Pares únicos (es, gn): {len(seen):,}")
+print(f"Total palabras español: {tot_es:,}")
+print(f"Total palabras guaraní: {tot_gn:,}")
+print("===========================================")
